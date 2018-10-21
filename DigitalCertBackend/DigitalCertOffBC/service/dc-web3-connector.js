@@ -20,6 +20,7 @@ var dcContract = new web3.eth.Contract(ContractAbi.abi,
 //var dcInstance = dcContract.at(ContractAddress);
 
 var create = async (certificateTemplate, userAddress) => {
+  certificateTemplate.typeDef = web3.utils.fromAscii(certificateTemplate.name);
   return await dcContract.methods.create(
     certificateTemplate.name,
     certificateTemplate.typeDef,
