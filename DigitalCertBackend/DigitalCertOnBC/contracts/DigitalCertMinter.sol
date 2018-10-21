@@ -27,7 +27,7 @@ contract DigitalCertMinter {
     uint256 constant TYPE_NF_BIT = 1 << 255;
     //address internal minter;
     mapping (uint256 => address)  minters;
-    mapping (bytes32 => Ownership)  ownership;
+    mapping (bytes32 => Ownership)  ownership; 
     mapping (bytes32 => uint256)  typeDef;
     mapping (uint256 => string)  symbols;
     mapping (uint256 => Items)  items;

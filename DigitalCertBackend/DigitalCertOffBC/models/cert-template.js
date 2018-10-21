@@ -8,19 +8,6 @@ var CertTemplateSchema = new mongoose.Schema({
   typeDef: {
     type:String, 
     required: true
-  }, 
-  uri: {
-    type:String, 
-    required: true
-  },
-  symbol:{
-    type:String, 
-    required: true
-  },
-  nfi: {
-    type:Boolean,
-    required: true
-    
   },
   _ownedBy: {
     type: String, 

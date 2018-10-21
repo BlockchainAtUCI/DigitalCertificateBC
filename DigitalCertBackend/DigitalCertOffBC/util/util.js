@@ -6,10 +6,15 @@ var generateSHA3Hash = (obj) => {
   return "0x"+d.digest('hex');
 }
 
-var generateETHtimestamp = (year, month, date) => {
+var toETHtimestamp = (year, month, date) => {
   let dateObj = new Date(year, month, date).getTime(); 
   return dateObj / 1000;
 }
+
+var fromETHtimestamp = (time) => {
+  return new Date(time*1000)
+}
+
 
 var cloneJSONObject = (jsonObject) => {
   return JSON.parse(JSON.stringify(jsonObject));
@@ -17,6 +22,7 @@ var cloneJSONObject = (jsonObject) => {
 
 module.exports = {
   generateSHA3Hash,
-  generateETHtimestamp,
+  toETHtimestamp,
+  fromETHtimestamp,
   cloneJSONObject
 }

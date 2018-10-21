@@ -4,20 +4,19 @@ const ABI_PATH = '/Users/Jake/Desktop/Jake_Programming/Project/DigitalCertBacken
 const {generateSHA3Hash} = require('../util/util');
 
 const ContractAbi = JSON.parse(fs.readFileSync(ABI_PATH));
-const ContractAddress = '0x6d5c2c6ef613f53fece1910cb18396fe75a4fd89'
+const ContractAddress = '0x3cc0c7376873fb2eeada275816e0cfb6b3998740';
 const GAS = 798445
 
 var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
 //need to change
-var contractAccount = '0x2cBB633CEF3089c635b5ef89F2D2EEBAa0c9EF28';
+var contractAccount = '0xba18f4e9ca40e79c0c42e6accb103a7986193335';
 //need to change
 web3.eth.defaultAccount = contractAccount;
 
 var dcContract = new web3.eth.Contract(ContractAbi.abi,
   ContractAddress,
   {gas: GAS});
-//var dcInstance = dcContract.at(ContractAddress);
 
 var create = async (certificateTemplate, userAddress) => {
   certificateTemplate.typeDef = web3.utils.fromAscii(certificateTemplate.name);
@@ -26,7 +25,7 @@ var create = async (certificateTemplate, userAddress) => {
     certificateTemplate.typeDef,
     certificateTemplate.uri,
     certificateTemplate.symbol, 
-    certificateTemplate.nfi
+    true
   ).send({
     from:userAddress,
     gas:GAS
@@ -42,9 +41,14 @@ var issueCert = async (certificateObject, recipient, expiredate, issuedate, cert
 
   try{
     let type = await dcContract.methods.getTypeDef(certificateTemplateTypeDef).call();
-    console.log("Hello Issuer: ", issuer)
     recipient = web3.utils.toHex(recipient);
-    returnedHash = await dcContract.methods.issueCert(recipient,type,cert,expiredate,issuedate)
+    returnedHash = await dcContract.methods.issueCert(
+      recipient,
+      type,
+      cert,
+      toETHtimestamp(expiredate.year, expiredate.month, expiredate.date),
+      toETHtimestamp(issuedate.year, issuedate.month, issuedate.date)
+    )
     .send({
       from: issuer,
       gas:GAS
@@ -58,8 +62,8 @@ var issueCert = async (certificateObject, recipient, expiredate, issuedate, cert
   }
   completeForm = certificateObject;
   completeForm.transactionid = returnedHash.transactionHash; 
-  completeForm.issuedate = new Date(issuedate);
-  completeForm.expiredate = new Date(expiredate*1000);
+  completeForm.issuedate = issuedate;
+  completeForm.expiredate = expiredate;
   return completeForm;
 }
 
