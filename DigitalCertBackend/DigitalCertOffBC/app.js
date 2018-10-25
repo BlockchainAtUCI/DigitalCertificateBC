@@ -1,6 +1,5 @@
 const {create,issueCert,verifyCert,createWalletAccount} = require("./service/dc-web3-connector");
 const _ = require('lodash');
-const CERTTEMP = require('./template/certificate.json');
 const {toETHtimestamp, cloneJSONObject, generateSHA3Hash} = require('./util/util');
 const {User} = require("./models/user");
 const {Wallet} = require("./models/wallet");
@@ -45,7 +44,7 @@ app.post('/users', (req,res) => {
     if(!result){
       try{
         let userBack = await user.save(); 
-        let wallet = await createWalletAccount(userBack.name);
+        let wallet = await createWalletAccount(userBack.email);
         wallet._ownedBy = userBack.email;
         new Wallet(wallet).save().then((result) => {
           res.send({
@@ -77,13 +76,24 @@ app.post('/users/login', (req,res) => {
         username:user.name,
         email:user.email,
         wallet:wallet.address,
-        privateKey: wallet.privateKey
+        privateKey: "PRIVATEKEY"
       });
     });
   }).catch((e) => {
     res.status(400).send(e);
   });
 });
+
+
+app.get("/alltemplate/:email", (req,res)=>{
+
+  CertTemplate.find({"_ownedBy":req.params.email}).then((result) => {
+    if(!result){
+      res.status(400).send()
+    }
+    res.send(result);
+  })
+})
 
 app.post("/create", (req,res)=> {
   var body = _.pick(req.body, ['email', 'template'])
@@ -104,28 +114,25 @@ app.post("/create", (req,res)=> {
 });
 
 app.post("/issue-cert", (req,res) => {
-  var body = _.pick(req.body, ["completeForm"]);
-  
+  //console.log(req.body);
   let completeForm = new Certification({
-    name: body.name,
-    title: body.title, 
-    address: body.address,
-    transactionId: body.transactionId,
-    issueDate: body.issueDate,
-    expiredDate: body.expiredDate,
-    _issedBy: body.email
+    name: req.body.name,
+    title: req.body.title, 
+    address: req.body.address,
+    transactionId: req.body.transactionId,
+    issueDate: req.body.issueDate,
+    expiredDate: req.body.expiredDate,
+    _issedBy: req.body._issedBy
   });
 
   completeForm.save().then((result) => {
     if(!result){
       res.status(404).send()
+    }else{
+      res.send(result);
     }
-    res.send(result);
   });
 });
-
-
-
 
 app.get('/', (req, res) => {
   res.send("Hello world");

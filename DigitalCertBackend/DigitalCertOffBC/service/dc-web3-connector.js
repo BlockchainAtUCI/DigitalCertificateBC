@@ -78,7 +78,15 @@ var verifyCert = async (cert) => {
 
 var createWalletAccount = async (compName) => {
   // need to check the compName is not empty
-  let newAccount = await web3.eth.accounts.create(compName);
+  //let newAccount = await web3.eth.accounts.create(compName);
+  let accounts = await web3.eth.getAccounts();
+  //console.log(accounts);
+
+  let newAccount = {
+    address: accounts[Math.floor(Math.random()*accounts.length)],
+    privateKey: "This is not a private key"
+  }
+
   return newAccount;
 }
 

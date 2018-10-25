@@ -22,18 +22,18 @@ var CertificationSchema = new mongoose.Schema ({
       required:true
   },
   issueDate:{
-      type:String,
-      trim:true, 
-      required: true 
+      year:String, 
+      month:String,
+      date: String
   },
   expiredDate:{
-      type:String, 
-      trim:true, 
-      required: true
+      year:String, 
+      month:String,
+      date: String
   },
   _issedBy: {
       type: String,
-      required: true
+      required:true
   }
 });
 

@@ -18,7 +18,7 @@ contract DigitalCertMinter {
         uint256 expireDate;
     }
 
-    // Use a split bit implementation.
+    // Use a split bit implementation. 
     // Store the type in the upper 128 bits..
     uint256 constant TYPE_MASK = uint256(uint128(~0)) << 128;
     // ..and the non-fungible index in the lower 128
