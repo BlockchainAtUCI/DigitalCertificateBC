@@ -33,7 +33,6 @@ contract DigitalCertMinter {
     mapping (uint256 => Items)  items;
     mapping (uint256 => string)  metadataURIs;
     mapping (uint256 => bytes32) nfiOwners;
-    mapping (uint256 => bytes32) nfiMapping; 
     uint256 nonce;
     
     event Issue(address from, bytes32 to, bytes32 cert);
@@ -41,6 +40,14 @@ contract DigitalCertMinter {
     modifier minterOnly(uint256 _type) {
         address minter = minters[_type];
         require(minter == msg.sender, "The current address is not authorized to do operate it");
+        _;
+    }
+
+    modifier allMinterOnly(uint256[] _types){
+        for (uint256 i; i < _types.length; i++){
+            address minter = minters[_types[i]];
+            require(minter == msg.sender, "The current address is not authorized to do operate it");
+        }
         _;
     }
 
@@ -65,11 +72,10 @@ contract DigitalCertMinter {
     }
 
     //issueCert
-    function issueCert (bytes32 recip, uint256 _type, bytes32 _cert, uint256 _expireDate, uint _issueDate)
-    external minterOnly(_type) {
+    function issueCert (bytes32 recip, uint256 _type, bytes32 _cert, uint256 _expireDate, uint256 _issueDate)
+    public minterOnly(_type) {
         require(isNonFungible(_type), "This type is not a proper type for the certificate");
         uint256 _startIndex = items[_type].totalSupply + 1;
-        _startIndex += 1;
         uint256 _nfi = _type | _startIndex;
         Ownership memory newOnwerShip = Ownership(_nfi, _issueDate, _expireDate);
         ownership[_cert] = newOnwerShip;
@@ -79,6 +85,15 @@ contract DigitalCertMinter {
         items[_type].totalSupply = items[_type].totalSupply.add(1);
 
         emit Issue(msg.sender, recip, _cert);
+    }
+
+    function issueCertBatch(bytes32[] _recips, uint256[] _types, bytes32[] _certs, uint256[] _expireDate, uint256[] _issueDate)
+    external allMinterOnly(_types){
+        uint256 numberOfCerts = _certs.length;
+
+        for(uint256 i; i < numberOfCerts; i++){
+            issueCert(_recips[i], _types[i], _certs[i], _expireDate[i], _issueDate[i]);
+        }
     }
 
     //verifyCert
@@ -96,6 +111,7 @@ contract DigitalCertMinter {
     function getTypeDef(bytes32 title) public view returns (uint256){
         return typeDef[title];
     }
+
     function getOnwerShipTkn(bytes32 _cert) external view returns (uint256){
         return ownership[_cert].ownershipTkn;
     }
@@ -107,8 +123,7 @@ contract DigitalCertMinter {
     function getOnwerShipExpireDate(bytes32 _cert) external view returns (uint256){
         return ownership[_cert].expireDate;
     }
-    // Optional meta data view Functions
-    // consider multi-lingual support for name?
+
     function name(uint256 _id) external view returns (string) {
         return items[_id].name;
     }
@@ -127,11 +142,12 @@ contract DigitalCertMinter {
     function ownerOf(uint256 _id) external view returns (bytes32){
         return nfiOwners[_id];
     }
-    // Only to make code clearer. Should not be functions
-    function isNonFungible(uint256 _id) public pure returns(bool) {
-        return _id & TYPE_NF_BIT == TYPE_NF_BIT;
-    }
+    
     function isFungible(uint256 _id) public pure returns(bool) {
         return _id & TYPE_NF_BIT == 0;
+    }
+    
+    function isNonFungible(uint256 _id) public pure returns(bool) {
+        return _id & TYPE_NF_BIT == TYPE_NF_BIT;
     }
 }

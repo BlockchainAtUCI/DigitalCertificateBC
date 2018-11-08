@@ -95,6 +95,26 @@ app.get("/alltemplate/:email", (req,res)=>{
   })
 })
 
+
+app.get("/certificates/:txid", (req,res) => {
+  Certification.findOne({"transactionId":req.params.txid}).then((result) => {
+    if(!result){
+      res.status(400).send()
+    }
+    res.send(result);
+  })
+})
+
+app.get("/pastCertificates/:issuedBy", (req,res) => {
+  console.log("Here", req.params.issuedBy)
+  Certification.find({"_issedBy":req.params.issuedBy}).then((result) => {
+    if(!result){
+      res.status(400).send()
+    }
+    res.send(result);
+  })
+})
+
 app.post("/create", (req,res)=> {
   var body = _.pick(req.body, ['email', 'template'])
   let certTemp = new CertTemplate({
@@ -114,7 +134,7 @@ app.post("/create", (req,res)=> {
 });
 
 app.post("/issue-cert", (req,res) => {
-  //console.log(req.body);
+  console.log("REQ BODY : ", req.body);
   let completeForm = new Certification({
     name: req.body.name,
     title: req.body.title, 

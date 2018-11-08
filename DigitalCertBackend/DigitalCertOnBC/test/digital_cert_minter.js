@@ -64,7 +64,7 @@ contract('DigitalCertMinter', function(accounts) {
   it("issueCertificate function test for recp1", async function() {
     let d = SHA3.SHA3Hash(256);
     
-    var dateObj = new Date(2018, 10, 11).getTime();
+    var dateObj = new Date(2018, 12, 23).getTime();
     let expireDate = dateObj / 1000;
     let issueDate = new Date().getTime(); 
 
@@ -126,9 +126,8 @@ contract('DigitalCertMinter', function(accounts) {
     }catch(err){
       console.log(err);
     }
-    
+  
     try{
-
       recp2Cert.name = 'Paul Karl'
       recp2Cert.address = "paul@gmail.com"; 
       recp2Cert.title = FinancialAssociateCertTemplate.name;
