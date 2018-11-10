@@ -96,6 +96,10 @@ contract DigitalCertMinter {
         }
     }
 
+    function renewal(bytes32 _certs, uint256 _type, uint256 _expireDate) external minterOnly(_type){
+        ownership[_certs].expireDate = _expireDate;
+    }
+    
     //verifyCert
     function verifyCert(bytes32 _cert) external view returns (bytes32){
         require(ownership[_cert].ownershipTkn != 0, "No certificate under this account");
@@ -139,6 +143,7 @@ contract DigitalCertMinter {
     function uri(uint256 _id) external view returns (string) {
         return metadataURIs[_id];
     }
+
     function ownerOf(uint256 _id) external view returns (bytes32){
         return nfiOwners[_id];
     }

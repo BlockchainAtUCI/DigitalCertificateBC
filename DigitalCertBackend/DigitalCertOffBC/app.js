@@ -20,7 +20,7 @@ app.use((request,response,next) => {
 });
 
 var originsWhitelist = [
-  'http://localhost:4200',      //this is my front-end url for development
+  'http://localhost:4200',      //this ialls my front-end url for development
 ];
 var corsOptions = {
   origin: function(origin, callback){
@@ -134,7 +134,7 @@ app.post("/create", (req,res)=> {
 });
 
 app.post("/issue-cert", (req,res) => {
-  console.log("REQ BODY : ", req.body);
+  //console.log("REQ BODY : ", req.body);
   let completeForm = new Certification({
     name: req.body.name,
     title: req.body.title, 
